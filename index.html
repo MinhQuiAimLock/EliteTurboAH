@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>𝐄𝐥𝐢𝐭𝐞 𝐓𝐮𝐫𝐛𝐨</title>
+  <link rel="manifest" href="/manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<canvas id="space-canvas"></canvas>
+<div class="cyber-scanlines"></div>
+
+<div id="action-toast" class="action-toast hidden">
+  <i id="toast-icon" class="fas fa-times-circle"></i>
+  <span id="toast-text">...</span>
+</div>
+
+<div id="feature-progress-modal" class="hidden">
+  <div class="fp-box glass-panel">
+    <div class="fp-icon"><i class="fas fa-microchip"></i></div>
+    <div class="fp-title">ĐANG TIÊM DỮ LIỆU</div>
+    <div class="fp-name" id="fp-name">AIMLOCK</div>
+    <div class="fp-bar-bg"><div class="fp-bar" id="fp-bar"></div></div>
+    <div class="fp-percent" id="fp-percent">0%</div>
+  </div>
+</div>
+
+<div id="home-intro" class="home-intro">
+  <div class="intro-title">𝐄𝐥𝐢𝐭𝐞 𝐓𝐮𝐫𝐛𝐨</div>
+  <div class="intro-main glass-panel">
+    <div class="intro-menu">
+      <span class="active">𝐄𝐥𝐢𝐭𝐞 𝐓𝐮𝐫𝐛𝐨</span>
+    </div>
+    <h3 class="intro-welcome">Chào Mừng Bạn Đến Với Elite Turbo</h3>
+    <p class="intro-desc">App Elite Turbo Sản Phẩm Độc Bởi Admin : Anh Hoang<br><br>[ ⚠️ LƯU Ý ]<br>Không Phải Phần Miềm Thứ 3<br>An Toàn - Chất Lượng - Hiệu Quả<br>Phù Hợp Cho Mọi Thiết Bị Của Bạn</p>
+    <button class="dev-btn hover-sound click-sound" onclick="enterPanel()">Start Elite Turbo</button>
+  </div>
+  <div class="home-footer">© 2026 BẢNG QUYỀN DEV ANH HOANG</div>
+</div>
+
+<div class="container" id="main-panel" style="display: none;">
+  <header class="header cyber-header">
+    <div class="app-title">
+      <span class="app-sub">GAME OPTIMIZER</span>
+      <span class="app-main" data-text="𝐄𝐥𝐢𝐭𝐞 𝐓𝐮𝐫𝐛𝐨">𝐄𝐥𝐢𝐭𝐞 𝐓𝐮𝐫𝐛𝐨</span>
+      <span class="app-game">FREE FIRE</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+    
+    <section id="tab-info" class="dashboard-section tab-content active-tab">
+      <div class="admin-card glass-panel hover-scale">
+        <h4 class="cyber-heading"><i class="fas fa-key"></i> Thời Gian Sử Dụng</h4>
+        <div class="status-row"><b>Trạng Thái:</b> <span class="status-active">Kết Nối Thành Công</span></div>
+        <div class="status-row"><b>Thời Gian:</b> <span id="info-key-exp" class="status-exp">Đang tải...</span></div>
+        <button class="cyber-btn danger-btn hover-sound click-sound" onclick="logoutKey()"><i class="fas fa-power-off"></i>Đăng Xuất Key</button>
+      </div>
+
+      <div class="admin-card dev-profile glass-panel hover-scale">
+        <div class="profile-img-wrap"><img src="img/cc.jpg" class="admin-photo" alt="Dev Anh Hoang"></div>
+        <h4 class="cyber-heading">Anh Hoang</h4>
+        <p class="cyber-subtext">Developer / Admin Elite Turbo</p>
+        <div class="admin-links">
+          <a href="https://www.facebook.com/share/18i5PMa93A/?mibextid=wwXIfr" target="_blank" class="hover-sound click-sound"><i class="fab fa-facebook"></i> Facebook</a>
+          <a href="https://zalo.me/0787056720" target="_blank" class="hover-sound click-sound"><i class="fas fa-comment"></i> Zalo</a>
+          <a href="https://www.tiktok.com/@anhhoang.trumfileloveyou?_r=1&_t=ZS-94cYuhL6rEG" target="_blank" class="hover-sound click-sound"><i class="fas fa-download"></i>TikToK</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-aimlock" class="dashboard-section tab-content active-tab">
+      <h2 class="section-title"><i class="fas fa-crown section-icon"></i> CHỨC NĂNG PREMIUM</h2>
+      
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">AIMLOCK</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Khóa Tâm Bám Đầu</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch" data-function="config">
+          <input type="checkbox" id="config-toggle" class="toggle-input aimsync hover-sound click-sound" />
+          <label for="config-toggle" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">SENSIVITY BOOSTER</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Nhạy Màn</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch">
+          <input type="checkbox" id="cn-master-toggle" class="toggle-input aimsync hover-sound click-sound">
+          <label for="cn-master-toggle" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">SCREEN BOOSTER</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Buff FPS</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch">
+          <input type="checkbox" id="anti-rung-pro" class="toggle-input aimsync hover-sound click-sound">
+          <label for="anti-rung-pro" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">ANCHOR AIM</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Ghìm Tâm</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch">
+          <input type="checkbox" id="aim-assist-plus" class="toggle-input aimsync hover-sound click-sound">
+          <label for="aim-assist-plus" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">FEATHER AIM</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Nhẹ Tâm</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch" data-function="lux">
+          <input type="checkbox" id="lux-toggle" class="toggle-input aimsync hover-sound click-sound" />
+          <label for="lux-toggle" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">HEADSHOT FIX</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Fix Lố</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch" data-function="fix-rung">
+          <input type="checkbox" id="fix-rung-toggle" class="toggle-input aimsync hover-sound click-sound" />
+          <label for="fix-rung-toggle" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">SHAKE FIX</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Fix Rung</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch" data-function="nhe-tam">
+          <input type="checkbox" id="nhe-tam-toggle" class="toggle-input aimsync hover-sound click-sound" />
+          <label for="nhe-tam-toggle" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale">
+        <div class="function-content">
+          <div class="function-text-wrap">
+            <span class="function-text">DRIFT FIX</span>
+            <div class="function-desc"><span class="check cyber-check"></span><span class="desc-text">Fix Lạc Đạn</span></div>
+          </div>
+        </div>
+        <div class="toggle-switch" data-function="lock-dau">
+          <input type="checkbox" id="lock-dau-toggle" class="toggle-input aimsync hover-sound click-sound" />
+          <label for="lock-dau-toggle" class="toggle-label"><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-optimize" class="dashboard-section tab-content active-tab">
+      <h2 class="section-title"><i class="fas fa-rocket section-icon"></i> TỐI ƯU THIẾT BỊ</h2>
+      <div class="sensi-item glass-panel hover-scale">
+        <div class="sensi-header">
+          <div class="sensi-icon"><i class="fas fa-mobile-screen-button"></i></div>
+          <div class="sensi-label">DEVICE:</div>
+          <div class="sensi-value">
+            <span class="cyber-value-label" style="background:transparent; border:none; text-shadow:none;">ANDROID</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sensi-item glass-panel hover-scale">
+        <div class="sensi-header">
+          <div class="sensi-icon"><i class="fas fa-sliders"></i></div>
+          <div class="sensi-label">CHẾ ĐỘ TĂNG TỐC :</div>
+          <div class="sensi-value"><span id="mode-label" class="cyber-value-label">Mượt Mà</span></div>
+        </div>
+        <div class="sensi-body"><input type="range" id="mode-slider" class="glowing-slider hover-sound click-sound" min="0" max="2" value="0" step="1" oninput="updateMode(this)"></div>
+      </div>
+
+      <div class="sensi-item glass-panel hover-scale">
+        <div class="sensi-header">
+          <div class="sensi-icon"><i class="fas fa-bullseye"></i></div>
+          <div class="sensi-label">DPI TRICK TARGET :</div>
+          <div class="sensi-value"><span id="dpi-label" class="cyber-value-label">1.0x</span></div>
+        </div>
+        <div class="sensi-body"><input type="range" id="dpi-slider" class="glowing-slider hover-sound click-sound" min="1" max="5" value="1" step="1" oninput="updateDPI(this)"></div>
+      </div>
+    </section>
+
+   <section id="tab-theme" class="dashboard-section tab-content active-tab">
+      <h2 class="section-title"><i class="fas fa-paint-roller section-icon"></i> TÙY CHỈNH & GIẢI TRÍ</h2>
+      
+      <div class="function-item glass-panel hover-scale" style="flex-direction: column; align-items: center; gap: 15px; padding: 20px;">
+        <div class="function-text-wrap" style="text-align: center; width: 100%;">
+          <span class="function-text" style="justify-content: center; width: 100%;">MÀU SẮC CHỦ ĐẠO</span>
+          <div class="function-desc" style="justify-content: center; width: 100%;"><span class="desc-text">Kéo chọn màu sắc cho toàn bộ Menu & Hiệu ứng</span></div>
+        </div>
+        <div class="color-picker-wrapper hover-sound click-sound">
+          <input type="color" id="theme-color-picker" value="#00e5ff">
+        </div>
+      </div>
+
+      <div class="function-item glass-panel hover-scale" style="flex-direction: column; align-items: center; gap: 15px; padding: 20px;">
+        <div class="function-text-wrap" style="text-align: center; width: 100%;">
+          <span class="function-text" style="justify-content: center; width: 100%; font-size: 16px;">MUSIC PLAYER CYBER</span>
+        </div>
+        <div class="music-player" style="width: 100%;">
+          <audio id="bg-music">
+            <source id="music-source" src="https://files.catbox.moe/g7t1i5.mp3" type="audio/mpeg"> </audio>
+          <div class="music-dropdown-wrap">
+            <select id="music-select" class="dropdown-select" style="width: 100%; margin-bottom: 15px; font-size: 13px;">
+              <option value="https://files.catbox.moe/g7t1i5.mp3">1. Nhạc highlight free fire cực cháy</option>
+              <option value="https://files.catbox.moe/b91kxa.mp3">2. Full Track Bình Gold Remix</option>
+              <option value="https://files.catbox.moe/4czp68.mp3">3. Nhạc Remix Tiktok 2026</option>
+            </select>
+          </div>
+          <div class="music-controls">
+            <button id="music-play-btn" class="music-btn hover-sound click-sound"><i class="fas fa-play"></i></button>
+            <div class="music-info" style="width: 100%;">
+              <div class="music-name" id="music-name-display">Đang phát: EDM Gaming Nhẹ Nhàng</div>
+              <div class="music-progress" style="margin-bottom: 4px;">
+                <div class="music-bar" id="music-bar"></div>
+              </div>
+              <div class="music-volume-control" style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-volume-up" style="color: var(--theme-color); font-size: 12px; filter: drop-shadow(0 0 5px var(--theme-color));"></i>
+                <input type="range" id="music-volume-slider" class="glowing-slider hover-sound click-sound" min="0" max="100" value="50" style="margin-top: 0; height: 4px;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section" id="extra-section">
+      <h2 class="section-title"><i class="fas fa-memory section-icon"></i> RAM / CPU MONITOR</h2>
+      
+      <div class="cm-topbar glass-panel hover-scale" style="margin-bottom: 12px;">
+        <div class="cm-controls">
+          <button id="cm-btn-ram" class="cm-btn cm-btn-primary hover-sound click-sound">Dọn RAM</button>
+          <button id="cm-btn-cpu" class="cm-btn cm-btn-primary hover-sound click-sound">Dọn CPU</button>
+          <button id="cm-btn-fps" class="cm-btn cm-btn-danger hover-sound click-sound">Lock FPS: OFF</button>
+          <div class="cm-pill"><span>FPS</span><b id="cm-fps-now">--</b><span>• Mode</span><b id="cm-mode-now">Unlocked</b></div>
+        </div>
+      </div>
+
+      <div class="cm-grid-3col">
+        <div class="cm-chart-box glass-panel hover-scale">
+          <div class="cm-chart-header">
+            <div class="cm-label">CPU Load <span id="cm-cpu-text">--%</span></div>
+            <div class="cm-pill"><span>Estimate</span><b id="cm-cpu-est">Frame time</b></div>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="cm-cpu-canvas" width="300" height="150"></canvas>
+          </div>
+        </div>
+
+        <div class="cm-chart-box glass-panel hover-scale">
+          <div class="cm-chart-header">
+            <div class="cm-label">RAM Usage <span id="cm-ram-text">--</span></div>
+            <div class="cm-pill"><span>Source</span><b id="cm-ram-src">Auto</b></div>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="cm-ram-canvas" width="300" height="150"></canvas>
+          </div>
+          <div class="cm-stats">
+            <div class="cm-stat"><div class="cm-k">JS Heap Used</div><div class="cm-v" id="cm-heap-used">--</div></div>
+            <div class="cm-stat"><div class="cm-k">JS Heap Limit</div><div class="cm-v" id="cm-heap-limit">--</div></div>
+          </div>
+        </div>
+
+        <div class="cm-panel-console console-pro glass-panel hover-scale">
+          <div class="console-header"><span class="console-dot live"></span><span class="console-title-pro">SYSTEM CONSOLE</span><span class="console-status">LIVE</span></div>
+          <div id="cm-console" class="cm-console pro"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <h2 class="section-title"><i class="fas fa-play section-icon"></i> BOOSTER</h2>
+      <div class="booster-card glass-panel hover-scale">
+        <div class="booster-left"><img src="https://i.ibb.co/4ZVWVqm8/IMG-1663.jpg" class="booster-icon"><span>FREE FIRE</span></div>
+        <button class="cyber-btn hover-sound click-sound inject-btn" onclick="openFreeFire()">BOOSTER</button>
+      </div>
+      <div class="booster-card glass-panel hover-scale">
+        <div class="booster-left"><img src="https://i.ibb.co/chQpJKC7/IMG-1662.jpg" class="booster-icon"><span>FREE FIRE MAX</span></div>
+        <button class="cyber-btn hover-sound click-sound inject-btn" onclick="openFreeFireMax()">BOOSTER</button>
+      </div>
+    </section>
+
+    <div class="footer cyber-footer">© 2026 BẢNG QUYỀN DEV ANH HOANG</div>
+
+  </main>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item hover-sound click-sound active-nav" data-target="tab-info" onclick="smoothScroll('tab-info')"><i class="fas fa-home"></i><span>HUB</span></div>
+  <div class="nav-item hover-sound click-sound" data-target="tab-aimlock" onclick="smoothScroll('tab-aimlock')"><i class="fas fa-crosshairs"></i><span>AIM_SYS</span></div>
+  <div class="nav-item hover-sound click-sound" data-target="tab-optimize" onclick="smoothScroll('tab-optimize')"><i class="fas fa-rocket"></i><span>TWEAKS</span></div>
+</div>
+
+<script src="panel-actions.js"></script>
+<script src="codecs.js"></script>
+<script src="codecss.js"></script>
+<script src="codecn.js"></script>
+<script src="app.js"></script>
+<script src="feature-hooks.js"></script>
+<script src="features.js"></script>
+<script src="key.js"></script>
+
+<script>
+
+  window.themeColor = '#00e5ff';
+  window.themeRgb = '0, 229, 255';
+
+
+  window.addEventListener('DOMContentLoaded', () => {
+
+    const colorPicker = document.getElementById('theme-color-picker');
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+    }
+    if (colorPicker) {
+      colorPicker.addEventListener('input', (e) => {
+        const color = e.target.value;
+        const rgb = hexToRgb(color);
+        if(rgb) {
+          window.themeColor = color;
+          window.themeRgb = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+          document.documentElement.style.setProperty('--theme-color', window.themeColor);
+          document.documentElement.style.setProperty('--theme-rgb', window.themeRgb);
+          updateSliderTrack(document.getElementById('mode-slider'));
+          updateSliderTrack(document.getElementById('dpi-slider'));
+        }
+      });
+    }
+
+
+    const audio = document.getElementById('bg-music');
+    const playBtn = document.getElementById('music-play-btn');
+    const musicBar = document.getElementById('music-bar');
+    const musicSelect = document.getElementById('music-select');
+    const musicNameDisplay = document.getElementById('music-name-display');
+    const volumeSlider = document.getElementById('music-volume-slider');
+
+    if (audio && playBtn) {
+    
+      if(volumeSlider) {
+        audio.volume = volumeSlider.value / 100;
+        updateSliderTrack(volumeSlider);
+        
+        
+        volumeSlider.addEventListener('input', (e) => {
+          audio.volume = e.target.value / 100;
+          updateSliderTrack(e.target); 
+        });
+      }
+
+      playBtn.addEventListener('click', () => {
+        if (audio.paused) { audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>'; } 
+        else { audio.pause(); playBtn.innerHTML = '<i class="fas fa-play"></i>'; }
+      });
+      
+      audio.addEventListener('timeupdate', () => {
+        if (audio.duration) { const pct = (audio.currentTime / audio.duration) * 100; musicBar.style.width = pct + '%'; }
+      });
+      
+      audio.addEventListener('ended', () => { audio.currentTime = 0; audio.play(); });
+      
+      if (musicSelect) {
+        musicSelect.addEventListener('change', (e) => {
+          audio.src = e.target.value;
+          musicNameDisplay.innerText = "Đang phát: " + e.target.options[e.target.selectedIndex].text;
+          audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        });
+      }
+    }
+
+  
+    const sections = document.querySelectorAll('section[id^="tab-"]');
+    const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const currentId = entry.target.getAttribute('id');
+          navItems.forEach(item => {
+            item.classList.remove('active-nav');
+            if (item.getAttribute('data-target') === currentId) { item.classList.add('active-nav'); }
+          });
+        }
+      });
+    }, { root: null, rootMargin: '0px', threshold: 0.3 });
+    sections.forEach(section => { observer.observe(section); });
+  });
+
+
+  function updateSliderTrack(slider) {
+    if(!slider) return;
+    const min = parseFloat(slider.min) || 0;
+    const max = parseFloat(slider.max) || 100;
+    const val = parseFloat(slider.value);
+    const percentage = ((val - min) / (max - min)) * 100;
+    slider.style.background = `linear-gradient(90deg, var(--theme-color) ${percentage}%, rgba(255,255,255,0.05) ${percentage}%)`;
+  }
+  const modeTexts = ["Mượt Mà", "Tiêu Chuẩn", "Cao Cấp"];
+  function updateMode(slider) { document.getElementById('mode-label').innerText = modeTexts[slider.value]; updateSliderTrack(slider); }
+  function updateDPI(slider) { document.getElementById('dpi-label').innerText = slider.value + ".0x"; updateSliderTrack(slider); }
+  
+  window.addEventListener('DOMContentLoaded', () => {
+     updateSliderTrack(document.getElementById('mode-slider'));
+     updateSliderTrack(document.getElementById('dpi-slider'));
+  });
+
+  function smoothScroll(targetId) {
+    const target = document.getElementById(targetId);
+    if(target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  }
+
+  function enterPanel() {
+    const intro = document.getElementById("home-intro");
+    const panel = document.getElementById("main-panel");
+    intro.style.opacity = "0"; intro.style.transition = "opacity 0.5s ease";
+    setTimeout(() => { intro.style.display = "none"; panel.style.display = "block"; }, 500);
+  }
+
+  function logoutKey() {
+    if(confirm("⚠️ CẢNH BÁO: Bạn Có Chắc Chắn Muốn Đăng Xuất Key Này?")) {
+      localStorage.removeItem("vsh_license_key"); 
+      if(window.VSHKeyGate && typeof window.VSHKeyGate.reset === "function") { window.VSHKeyGate.reset(); } 
+      else { location.reload(); }
+    }
+  }
+
+
+  window.addEventListener('load', () => {
+    document.querySelectorAll(".modal, .notice-modal").forEach(el => { el.style.display = "none"; });
+    
+    setInterval(() => {
+      const infoExpEl = document.getElementById('info-key-exp');
+      if(window.VSHKeyGate && infoExpEl) {
+        const keyState = window.VSHKeyGate.getState();
+        if(keyState.verified) {
+          if(keyState.expiresAt) {
+            let expDateStr = keyState.expiresAt;
+            if(!isNaN(expDateStr)) { expDateStr = String(expDateStr).length === 10 ? Number(expDateStr) * 1000 : Number(expDateStr); }
+            const distance = new Date(expDateStr).getTime() - new Date().getTime();
+            if(distance > 0) {
+              const d = Math.floor(distance / (1000 * 60 * 60 * 24)), h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)), s = Math.floor((distance % (1000 * 60)) / 1000);
+              infoExpEl.innerText = d > 365 ? "Không giới hạn" : `${d}d ${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+              infoExpEl.style.color = "var(--neon-green)";
+            } else { infoExpEl.innerText = "ĐÃ HẾT HẠN"; infoExpEl.style.color = "var(--neon-pink)"; }
+          } else { infoExpEl.innerText = "Không giới hạn"; infoExpEl.style.color = "var(--neon-green)"; }
+        } else { infoExpEl.innerText = "CHƯA KÍCH HOẠT"; infoExpEl.style.color = "var(--neon-pink)"; }
+      }
+    }, 1000);
+    
+    document.querySelectorAll('.aimsync').forEach(input => {
+      input.addEventListener('click', function(e) {
+        const self = this;
+        const featureName = this.closest('.function-item').querySelector('.function-text').innerText.trim();
+        if (this.checked) {
+          e.preventDefault(); 
+          const modal = document.getElementById('feature-progress-modal');
+          const bar = document.getElementById('fp-bar');
+          const pct = document.getElementById('fp-percent');
+          document.getElementById('fp-name').innerText = featureName;
+          
+          modal.classList.remove('hidden');
+          bar.style.width = '0%';
+          bar.style.backgroundColor = 'var(--theme-color)';
+          bar.style.boxShadow = '0 0 15px var(--theme-color)';
+          pct.innerText = '0%'; pct.style.color = 'var(--theme-color)';
+          
+          let progress = 0;
+          const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 12) + 4; 
+            if(progress >= 100) {
+              progress = 100; clearInterval(interval);
+              bar.style.width = '100%'; bar.style.backgroundColor = 'var(--neon-green)'; bar.style.boxShadow = '0 0 20px var(--neon-green)';
+              pct.innerText = '100%'; pct.style.color = 'var(--neon-green)';
+              setTimeout(() => { modal.classList.add('hidden'); self.checked = true; }, 600); 
+            } else {
+              bar.style.width = progress + '%'; pct.innerText = progress + '%';
+            }
+          }, 50); 
+        } else {
+          showOffToast(featureName);
+        }
+      });
+    });
+  });
+
+  function showOffToast(name) {
+    const toast = document.getElementById('action-toast');
+    document.getElementById('toast-text').innerText = 'Đã Tắt: ' + name;
+    toast.className = 'action-toast error show';
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2000);
+  }
+
+ 
+  let audioCtx;
+  const initAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); };
+  document.addEventListener('pointerdown', initAudio, { once: true });
+  document.addEventListener('keydown', initAudio, { once: true });
+
+  function playHoverSound() {
+    if (!audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.01, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+  }
+  function playClickSound() {
+    if (!audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+  }
+
+  document.addEventListener('mouseover', (e) => { if (e.target.closest('.hover-sound, .toggle-label, button, a')) { playHoverSound(); } });
+  document.addEventListener('click', (e) => {
+    playClickSound();
+    const ripple = document.createElement('div');
+    ripple.className = 'cyber-ripple';
+    ripple.style.left = e.clientX + 'px'; ripple.style.top = e.clientY + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => { ripple.remove(); }, 600);
+  });
+
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('space-canvas');
+    if(!canvas) return; const ctx = canvas.getContext('2d');
+    let width, height; let stars = [], bubbles = [], meteors = [];
+
+    function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+
+    class Star {
+      constructor() { this.reset(); }
+      reset() { this.x = Math.random() * width; this.y = Math.random() * height; this.size = Math.random() * 2.5 + 0.5; this.alpha = Math.random(); this.alphaDir = Math.random() > 0.5 ? 1 : -1; this.blinkRate = Math.random() * 0.03 + 0.01; }
+      update() { this.alpha += this.blinkRate * this.alphaDir; if (this.alpha <= 0.1 || this.alpha >= 1) this.alphaDir *= -1; }
+      draw() {
+        ctx.shadowBlur = 8; ctx.shadowColor = window.themeColor;
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      }
+    }
+
+    class Bubble {
+      constructor() { this.reset(true); }
+      reset(randomY = false) {
+        this.x = Math.random() * width; this.y = randomY ? Math.random() * height : height + 150;
+        this.size = Math.random() * 120 + 80; this.speedY = -(Math.random() * 0.5 + 0.2); this.speedX = Math.random() * 0.6 - 0.3;
+        this.opacity = Math.random() * 0.06 + 0.02;
+        this.isThemeColor = Math.random() > 0.5; // Gắn theo màu theme hoặc màu phụ
+      }
+      update() { this.y += this.speedY; this.x += this.speedX; if (this.y < -200 || this.x < -200 || this.x > width + 200) this.reset(); }
+      draw() {
+        ctx.beginPath();
+        let colorStr = this.isThemeColor ? window.themeRgb : '176, 38, 255';
+        let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+        grad.addColorStop(0, `rgba(${colorStr}, ${this.opacity})`);
+        grad.addColorStop(1, `rgba(${colorStr}, 0)`);
+        ctx.fillStyle = grad; ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+
+    class Meteor {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * width * 1.5; this.y = -100; this.length = Math.random() * 200 + 100;
+        this.speedX = -(Math.random() * 12 + 8); this.speedY = Math.random() * 12 + 8;
+        this.active = false; this.delay = Math.random() * 150 + 20; 
+      }
+      update() { if (!this.active) { this.delay--; if (this.delay <= 0) this.active = true; return; } this.x += this.speedX; this.y += this.speedY; if (this.y > height || this.x < 0) this.reset(); }
+      draw() {
+        if (!this.active) return;
+        ctx.shadowBlur = 15; ctx.shadowColor = window.themeColor;
+        ctx.beginPath();
+        let grad = ctx.createLinearGradient(this.x, this.y, this.x - this.speedX * this.length * 0.2, this.y - this.speedY * this.length * 0.2);
+        grad.addColorStop(0, "rgba(255, 255, 255, 1)"); grad.addColorStop(0.2, `rgba(${window.themeRgb}, 0.9)`); grad.addColorStop(1, `rgba(${window.themeRgb}, 0)`);
+        ctx.strokeStyle = grad; ctx.lineWidth = 3; 
+        ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - this.speedX * this.length * 0.2, this.y - this.speedY * this.length * 0.2);
+        ctx.stroke(); ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < 100; i++) stars.push(new Star());
+    for (let i = 0; i < 15; i++) bubbles.push(new Bubble());
+    for (let i = 0; i < 6; i++) meteors.push(new Meteor());
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      bubbles.forEach(b => { b.update(); b.draw(); });
+      stars.forEach(s => { s.update(); s.draw(); });
+      meteors.forEach(m => { m.update(); m.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  });
+</script>
+<script>
+  (function() {
+    const securityCheck = setInterval(() => {
+      if (typeof window.VSHKeyGate === 'undefined') {
+        console.error("CẢNH BÁO: Hệ thống bảo mật bị vô hiệu hóa!");
+        document.body.innerHTML = `
+          <div style="background:#000; color:#00f7ff; height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; font-family:sans-serif; padding:20px;">
+            <div>
+              <h1 style="font-size:50px;">⚠️</h1>
+              <h2>Lỗi App Đã Bị Xóa Files Hoặc Crack</h2>
+              <p>Cảnh Báo : App Đã Bị Crack</p>
+              <p>Vui Lòng Liên Hệ Để Lấy Bản Gốc Sử Dụng</p>
+              <button onclick="location.reload()" style="background:#00f7ff; border:none; padding:10px 20px; border-radius:5px; font-weight:bold; margin-top:20px;">THỬ LẠI</button>
+            </div>
+          </div>`;
+        clearInterval(securityCheck);
+      }
+    }, 2000);
+  })();
+</script>
+</body>
+</html>
