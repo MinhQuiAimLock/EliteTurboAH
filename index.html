@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Elite Turbo - Cyber Engine</title>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="base-bg-layer"></div>
+<div class="dynamic-bg"></div>
+<canvas id="space-canvas"></canvas>
+<canvas id="particles-canvas"></canvas>
+
+<div id="virtual-crosshair" style="--xh-color: #00ff88; --xh-size: 1; --xh-x: 0px; --xh-y: 0px; transform: translate(calc(-50% + var(--xh-x)), calc(-50% + var(--xh-y))) scale(var(--xh-size)); display: none;"></div>
+
+<div id="action-toast" class="action-toast hidden"><i id="toast-icon" class="fas fa-info-circle"></i><span id="toast-text">...</span></div>
+
+<div id="feature-progress-modal" class="hidden fullscreen-modal">
+    <div class="glass-panel adapt-box">
+        <div class="adapt-spinner"><div class="spinner-ring"></div><i class="fas fa-microchip icon-core"></i></div>
+        <h3 class="gradient-text">SYSTEM OVERRIDE</h3>
+        <p id="fp-name" class="mono-text font-bold text-white text-lg mt-2">AIMLOCK</p>
+        <div class="progress-track mt-15"><div id="fp-bar" class="progress-fill" style="width: 0%;"></div></div>
+        <div id="fp-percent" class="mono-text font-bold text-primary mt-15" style="font-size: 24px;">0%</div>
+    </div>
+</div>
+
+<div id="home-intro" class="home-intro" style="z-index: 10;">
+    <div class="intro-glass-panel glass-card">
+        <div class="brand-header">
+            <div class="brand-logo"><i class="fas fa-crosshairs"></i></div>
+            <h1 class="brand-title">ELITE <span>TURBO</span></h1>
+            <p class="brand-subtitle mono-text">ELITE TURBO OPTIMIZE</p>
+        </div>
+
+        <div class="dashboard-preview">
+            <div class="user-profile">
+                <div class="avatar-ring"><img src="img/cc.jpg" alt="Anh Hoang" class="avatar-img" onerror="this.src='https://i.ibb.co/LtbY9J4/default.png'"></div>
+                <div class="user-info"><h3>Anh Hoang</h3><p class="text-primary">ADMIN APPLICATION</p></div>
+            </div>
+            <div class="key-status-box">
+                <div class="k-row"><span class="k-label">Status</span> <span class="k-val text-primary"><i class="fas fa-link"></i> CONNECTED</span></div>
+                <div class="k-row"><span class="k-label">Key ID</span> <span class="k-val text-white current-key-display">Đang tải...</span></div>
+                <div class="k-row"><span class="k-label">Expire</span> <span class="k-val text-primary info-key-exp">Đang tải...</span></div>
+            </div>
+        </div>
+
+        <div class="os-selector-group mt-15 mb-15">
+            <button class="os-btn click-sound" onclick="window.open('https://www.mediafire.com/file/v771dxht1mfmru5/AimLock_IOS.zip/file', '_blank')">
+                <span class="content"><i class="fab fa-apple"></i> Files IOS</span>
+            </button>
+            <button class="os-btn click-sound" onclick="window.open('https://www.mediafire.com/file/8v7o2w95898mt0p/AimLock_Android.zip/file', '_blank')">
+                <span class="content"><i class="fab fa-android"></i> Files Android</span>
+            </button>
+        </div>
+
+        <button class="btn-primary click-sound mt-15" onclick="enterPanel()"><span>START ELITETURBO</span> <i class="fas fa-power-off"></i></button>
+        <button class="btn-text click-sound" onclick="logoutKey()"><i class="fas fa-sign-out-alt"></i> EXIT ELITETURBO</button>
+    </div>
+</div>
+
+<div class="app-layout" id="main-panel" style="display: none; z-index: 10; position: relative;">
+    <aside class="sidebar-glass">
+        <div class="sidebar-header"><div class="brand-logo-small"><i class="fas fa-crosshairs"></i></div><div class="brand-text">ELITE<span>TURBO</span></div></div>
+
+        <nav class="side-nav">
+            <div class="nav-item active-nav click-sound" data-target="tab-home"><i class="fas fa-home"></i><span>HOME</span></div>
+            <div class="nav-item click-sound" data-target="tab-sens"><i class="fas fa-bullseye"></i><span>SENSI</span></div>
+            <div class="nav-item click-sound" data-target="tab-func"><i class="fas fa-fire"></i><span>AIM</span></div>
+            <div class="nav-item click-sound" data-target="tab-boost"><i class="fas fa-rocket"></i><span>BOOST</span></div>
+            <div class="nav-item click-sound" id="nav-xhair" data-target="tab-crosshair"><i class="fas fa-meteor"></i><span>CROSSHAIR</span></div>
+            <div class="nav-item click-sound" data-target="tab-setup"><i class="fas fa-cog"></i><span>SETTING</span></div>
+        </nav>
+
+        <div class="sidebar-footer"><button class="btn-logout click-sound" onclick="logoutKey()" title="Đăng Xuất"><i class="fas fa-power-off"></i></button></div>
+    </aside>
+
+    <main class="content-area glass-card">
+        <header class="top-header">
+            <div class="header-title"><h2 id="current-tab-title">DASHBOARD</h2><p>Elite Performance • <span class="text-primary">CONNECTION</span></p></div>
+            <div class="header-actions"><div class="status-pulse"><div class="status-dot"></div> READY</div></div>
+        </header>
+
+        <div class="tab-container">
+
+            <section id="tab-home" class="dashboard-section tab-content active-tab">
+                <div class="glass-card mb-25" style="padding:15px 20px; display:flex; align-items:center; justify-content:space-between;">
+                    <span class="mono-text" style="font-size: 11px; color: var(--text-muted); font-weight: 800;">DEVICE:</span>
+                    <span id="detected-device-name" class="text-primary font-bold mono-text" style="font-size: 14px;">SCANNING...</span>
+                </div>
+
+                <div class="ft-grid-4 mb-25">
+                    <div class="ft-stat-box"><span class="ft-label">DEVICE</span><span class="ft-val text-success">ONLINE</span></div>
+                    <div class="ft-stat-box"><span class="ft-label">PERFORMANCE</span><span class="ft-val text-danger">ULTRA</span></div>
+                    <div class="ft-stat-box"><span class="ft-label">THERMAL</span><span class="ft-val text-info">STABLE</span></div>
+                    <div class="ft-stat-box"><span class="ft-label">AI ASSIST</span><span class="ft-val text-warning">READY</span></div>
+                </div>
+
+                <div class="glass-card mb-25 ft-ai-panel">
+                    <div class="ft-ring-wrapper">
+                        <svg class="ft-ring" viewBox="0 0 100 100">
+                            <circle class="ft-ring-bg" cx="50" cy="50" r="40"></circle>
+                            <circle class="ft-ring-fill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="47.7"></circle>
+                        </svg>
+                        <div class="ft-ring-text"><span class="ft-ring-val" id="ft-perf-val">81%</span><span class="ft-ring-lbl">PERF</span></div>
+                    </div>
+                    <h3 class="ft-ai-title">OPTIMIZE PERFORMANCE</h3>
+                    <p class="ft-ai-desc">Hệ thống tối ưu hóa AI đang hoạt động ở chế độ Ultra. Phân tích thời gian thực đã được kích hoạt.</p>
+                    <div class="ft-badges">
+                        <span class="ft-badge active">ULTRA MODE</span>
+                        <span class="ft-badge active">AI ON</span>
+                        <span class="ft-badge">ECO</span>
+                        <span class="ft-badge">BALANCE</span>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Performance Core</h3>
+                <div class="ft-live-grid mb-100">
+                    <div class="ft-live-box"><div class="fl-header"><i class="fas fa-signal"></i> FPS</div><div class="fl-val text-success" id="ft-fps-val">54</div><div class="fl-lbl">frames/sec</div></div>
+                    <div class="ft-live-box"><div class="fl-header"><i class="fas fa-wifi"></i> PING</div><div class="fl-val text-info" id="ft-ping-val">39</div><div class="fl-lbl">ms</div></div>
+                    <div class="ft-live-box"><div class="fl-header"><i class="fas fa-microchip"></i> CPU</div><div class="fl-val text-danger" id="ft-cpu-val">48</div><div class="fl-lbl">% load</div></div>
+                    <div class="ft-live-box"><div class="fl-header"><i class="fas fa-memory"></i> GPU</div><div class="fl-val text-warning" id="ft-gpu-val">66</div><div class="fl-lbl">% load</div></div>
+                </div>
+            </section>
+
+            <section id="tab-sens" class="dashboard-section tab-content">
+                <h3 class="section-title">Sensitivity Control <span style="font-size:9px; color:var(--success); border:1px solid var(--success); padding:2px 6px; border-radius:4px; margin-left:10px; font-family: monospace;">AUTO DETECTED</span></h3>
+                <div class="glass-card platform-selector mb-25">
+                    <div class="platform-grid">
+                        <button id="btn-ios" class="platform-btn click-sound" onclick="selectDevice('ios')"><i class="fab fa-apple"></i> <span>iOS</span></button>
+                        <button id="btn-android" class="platform-btn click-sound" onclick="selectDevice('android')"><i class="fab fa-android"></i> <span>ANDROID</span></button>
+                    </div>
+                </div>
+
+                <div id="sensitivity-panel" class="glass-card mb-25 hidden-panel">
+                    <div class="sens-header"><div class="sh-left"><i class="fas fa-crosshairs text-primary glow-icon"></i><div><h4>SENSITIVITY</h4><p class="mono-text">Tối ưu hóa ngắm bắn tự động</p></div></div></div>
+                    <div class="sens-list">
+                        <div class="sens-item"><span class="sens-label">1. Nhìn xung quanh</span><span class="sens-val mono-text" id="sens-val-1">0</span></div>
+                        <div class="sens-item"><span class="sens-label">2. Ống ngắm hồng tâm</span><span class="sens-val mono-text" id="sens-val-2">0</span></div>
+                        <div class="sens-item"><span class="sens-label">3. Ống ngắm 2x</span><span class="sens-val mono-text" id="sens-val-3">0</span></div>
+                        <div class="sens-item"><span class="sens-label">4. Ống ngắm 4x</span><span class="sens-val mono-text" id="sens-val-4">0</span></div>
+                        <div class="sens-item"><span class="sens-label">5. Ống ngắm súng ngắm</span><span class="sens-val mono-text" id="sens-val-5">0</span></div>
+                        <div class="sens-item"><span class="sens-label">6. Nút camera tự do</span><span class="sens-val mono-text" id="sens-val-6">0</span></div>
+                        <div class="sens-item fire-btn-wrapper">
+                            <div class="fb-left"><div class="fb-circle"><i class="fas fa-meteor"></i></div><span class="sens-label">KÍCH CỠ NÚT BẮN</span></div>
+                            <span class="sens-val mono-text" id="sens-val-7">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-title mt-25">SENSI SCREEN</h3>
+                <div class="glass-card slider-card mb-25">
+                    <div class="slider-header"><div class="sh-left"><i class="fas fa-arrows-alt-h text-primary"></i> Touch Sensitivity</div><div class="sh-right" id="sens-x-label">50</div></div>
+                    <div class="zigzag-wrapper"><div class="zigzag-bg"></div><input type="range" class="zigzag-input slide-sound" min="1" max="100" value="50" step="1" oninput="document.getElementById('sens-x-label').innerText = this.value"></div>
+                </div>
+                <div class="glass-card slider-card mb-100">
+                    <div class="slider-header"><div class="sh-left"><i class="fas fa-arrows-alt-v text-primary"></i> TTouch Response</div><div class="sh-right" id="sens-y-label">50</div></div>
+                    <div class="zigzag-wrapper"><div class="zigzag-bg"></div><input type="range" class="zigzag-input slide-sound" min="1" max="100" value="50" step="1" oninput="document.getElementById('sens-y-label').innerText = this.value"></div>
+                </div>
+            </section>
+
+            <section id="tab-func" class="dashboard-section tab-content">
+                <h3 class="section-title">MAIN MODULES</h3>
+                <div class="functions-list mb-100">
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>AIMLOCK</h4><p>Khóa Tâm Bám Đầu - Tự động căn chuẩn</p></div><div class="modern-toggle"><input type="checkbox" id="config-toggle" class="toggle-input aimsync click-sound" /><label for="config-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>SENSIVITY BOOSTER</h4><p>Tăng tốc độ phản hồi cảm ứng màn hình</p></div><div class="modern-toggle"><input type="checkbox" id="cn-master-toggle" class="toggle-input aimsync click-sound" /><label for="cn-master-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>SCREEN BOOSTER</h4><p>Tối ưu hóa khung hình hiển thị (FPS)</p></div><div class="modern-toggle"><input type="checkbox" id="anti-rung-pro" class="toggle-input aimsync click-sound" /><label for="anti-rung-pro" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>ANCHOR AIM</h4><p>Giữ cố định điểm ngắm khi xả đạn</p></div><div class="modern-toggle"><input type="checkbox" id="aim-assist-plus" class="toggle-input aimsync click-sound" /><label for="aim-assist-plus" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>FEATHER AIM</h4><p>Giảm sức ỳ khi thao tác vuốt tâm</p></div><div class="modern-toggle"><input type="checkbox" id="lux-toggle" class="toggle-input aimsync click-sound" /><label for="lux-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>HEADSHOT FIX</h4><p>Hạn chế tình trạng tâm vượt quá đầu</p></div><div class="modern-toggle"><input type="checkbox" id="fix-rung-toggle" class="toggle-input aimsync click-sound" /><label for="fix-rung-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>SHAKE FIX</h4><p>Ổn định đường đạn khi di chuyển</p></div><div class="modern-toggle"><input type="checkbox" id="nhe-tam-toggle" class="toggle-input aimsync click-sound" /><label for="nhe-tam-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>DRIFT FIX</h4><p>Khóa vị trí ngắm chắc chắn trong vùng</p></div><div class="modern-toggle"><input type="checkbox" id="lock-dau-toggle" class="toggle-input aimsync click-sound" /><label for="lock-dau-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                </div>
+            </section>
+
+            <section id="tab-boost" class="dashboard-section tab-content">
+                <h3 class="section-title">SYSTEM BOOSTER</h3>
+                <div class="glass-card system-monitor-wrapper mb-25">
+                    <div class="sm-top-controls">
+                        <div class="sm-btn-row"><button id="cm-btn-ram" class="cm-btn click-sound">CLEAR RAM</button><button id="cm-btn-cpu" class="cm-btn click-sound">OPT CPU</button><button id="cm-btn-fps" class="cm-btn btn-danger click-sound">LOCK FPS: OFF</button></div>
+                        <div class="sm-fps-badge">FPS: <b id="cm-fps-now" style="color: var(--primary);">75.0</b> | <span id="cm-mode-now">Unlocked</span></div>
+                    </div>
+                    <div class="monitor-grid">
+                        <div class="monitor-box"><div class="mon-header"><span class="title">CPU LOAD</span> <span class="val text-primary" id="cm-cpu-text">0%</span></div><div class="mon-chart"><canvas id="cm-cpu-canvas"></canvas></div><div class="mon-footer cpu-footer"><span class="est" id="cm-cpu-est">FRAME TIME</span></div></div>
+                        <div class="monitor-box"><div class="mon-header"><span class="title">RAM USAGE</span> <span class="val text-primary" id="cm-ram-text" style="text-shadow:0 0 10px var(--primary-glow);">1%</span></div><div class="mon-chart"><canvas id="cm-ram-canvas"></canvas></div><div class="mon-footer ram-footer"><div class="ram-values"><span id="cm-heap-used">4.9 MB</span><span id="cm-heap-limit">4096.0 MB</span></div><span class="src" id="cm-ram-src">AUTO</span></div></div>
+                        <div class="monitor-box"><div class="mon-header"><span class="title">GPU RENDER</span> <span class="val text-primary" id="cm-gpu-text">0%</span></div><div class="mon-chart"><canvas id="cm-gpu-canvas"></canvas></div><div class="mon-footer cpu-footer"><span class="est">HW ACCELERATION</span></div></div>
+                        <div class="monitor-box"><div class="mon-header"><span class="title">NETWORK PING</span> <span class="val text-danger" id="cm-ping-text">-- ms</span></div><div class="mon-chart"><canvas id="cm-ping-canvas"></canvas></div><div class="mon-footer ram-footer"><span class="src text-danger">LATENCY LIMIT</span></div></div>
+                    </div>
+                    <div class="glass-card console-card mt-15"><div class="console-header"><div class="ch-left"><span class="pulse-dot"></span> TERMINAL</div><div class="ch-right">LIVE</div></div><div id="cm-console" class="cm-console"></div></div>
+                </div>
+
+                <h3 class="section-title">HARDWARE TUNING</h3>
+                <div class="glass-card slider-card mb-25">
+                    <div class="slider-header"><div class="sh-left"><i class="fas fa-tachometer-alt"></i> CHẾ ĐỘ TĂNG TỐC</div><div class="sh-right" id="mode-label">Mượt Mà</div></div>
+                    <div class="zigzag-wrapper"><div class="zigzag-bg"></div><input type="range" id="mode-slider" class="zigzag-input slide-sound" min="0" max="2" value="0" step="1" oninput="updateMode(this)"></div>
+                </div>
+                <div class="glass-card slider-card mb-25">
+                    <div class="slider-header"><div class="sh-left"><i class="fas fa-crosshairs"></i> DPI TRICK TARGET</div><div class="sh-right" id="dpi-label">1.0x</div></div>
+                    <div class="zigzag-wrapper"><div class="zigzag-bg"></div><input type="range" id="dpi-slider" class="zigzag-input slide-sound" min="1" max="5" value="1" step="1" oninput="updateDPI(this)"></div>
+                </div>
+
+                <h3 class="section-title mt-25">NETWORK MODULES</h3>
+                <div class="functions-list mb-25">
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>NETWORK OPTIMIZATION</h4><p>Ổn định Ping, chống giật lag mạng</p></div><div class="modern-toggle"><input type="checkbox" id="net-toggle" class="toggle-input aimsync click-sound" /><label for="net-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                    <div class="glass-card horizontal-card func-card"><div class="hc-info"><h4>CLEAR CACHE</h4><p>Tối ưu hóa đường truyền máy chủ</p></div><div class="modern-toggle"><input type="checkbox" id="dns-toggle" class="toggle-input aimsync click-sound" /><label for="dns-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label></div></div>
+                </div>
+
+                <h3 class="section-title mt-25">GAME BOOSTER</h3>
+                <div class="glass-card game-card"><img src="https://i.ibb.co/4ZVWVqm8/IMG-1663.jpg" class="game-icon"><div class="game-info"><h4>FREE FIRE</h4><p class="mono-text text-primary">Tối ưu tăng tốc free fire thường</p></div><button class="btn-boost click-sound" onclick="startInjection('freefireth://')"><i class="fas fa-rocket"></i> RUN</button></div>
+                <div class="glass-card game-card mb-100"><img src="https://i.ibb.co/chQpJKC7/IMG-1662.jpg" class="game-icon"><div class="game-info"><h4>FREE FIRE MAX</h4><p class="mono-text text-primary">Tối ưu tăng tốc free fire max</p></div><button class="btn-boost click-sound" onclick="startInjection('freefiremax://')"><i class="fas fa-rocket"></i> RUN</button></div>
+            </section>
+
+            <section id="tab-crosshair" class="dashboard-section tab-content">
+                <h3 class="section-title">CROSSHAIR</h3>
+
+                <div class="glass-card mb-25 func-card" style="display:flex; justify-content:space-between; align-items:center; padding: 20px 25px;">
+                    <div class="hc-info">
+                        <h4 style="font-size:14px; font-weight:800; color:#fff; letter-spacing:1px; text-transform: uppercase;">HIỂN THỊ TÂM ẢO</h4>
+                        <p style="font-size:11px; color:var(--text-muted); margin-top:6px;">Bật tâm ngắm overlay trên màn hình Android</p>
+                    </div>
+                    <div class="modern-toggle">
+                        <input type="checkbox" id="crosshair-toggle" class="toggle-input click-sound" />
+                        <label for="crosshair-toggle" class="toggle-bg"><span class="toggle-thumb"></span></label>
+                    </div>
+                </div>
+
+                <h3 class="section-title mt-25">STYLE PRESET</h3>
+                <div class="glass-card mb-25" style="padding: 20px;">
+                    <div class="xh-grid">
+                        <div class="xh-option click-sound active" id="xh-opt-1" onclick="setXhType(1)"><div class="xh-preview" id="preview-1"></div></div>
+                        <div class="xh-option click-sound" id="xh-opt-2" onclick="setXhType(2)"><div class="xh-preview" id="preview-2"></div></div>
+                        <div class="xh-option click-sound" id="xh-opt-3" onclick="setXhType(3)"><div class="xh-preview" id="preview-3"></div></div>
+                        <div class="xh-option click-sound" id="xh-opt-4" onclick="setXhType(4)"><div class="xh-preview" id="preview-4"></div></div>
+                    </div>
+                </div>
+
+                <h3 class="section-title mt-25">CUSTOMIZE</h3>
+                <div class="glass-card mb-100" style="padding: 25px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                        <span style="font-size:13px; font-weight:800; color:#fff; font-family: 'Space Grotesk', monospace;">MÀU SẮC CHỦ ĐẠO</span>
+                        <input type="color" id="xh-color-picker" value="#00ff88" style="background:transparent; border:none; cursor:pointer; width:35px; height:35px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));" onchange="updateXh()">
+                    </div>
+
+                    <div class="slider-header"><div class="sh-left">KÍCH CỠ TÂM</div><div class="sh-right" id="xh-size-lbl">1.0x</div></div>
+                    <div class="neon-slider-wrapper mb-25"><input type="range" id="xh-size-slider" class="neon-slider slide-sound" min="0.1" max="3" step="0.05" value="1" oninput="updateXh()"></div>
+
+                    <div class="slider-header"><div class="sh-left">TRỤC X</div><div class="sh-right" id="xh-x-lbl">0px</div></div>
+                    <div class="neon-slider-wrapper mb-25"><input type="range" id="xh-x-slider" class="neon-slider slide-sound" min="-200" max="200" step="1" value="0" oninput="updateXh()"></div>
+
+                    <div class="slider-header"><div class="sh-left">TRỤC Y</div><div class="sh-right" id="xh-y-lbl">0px</div></div>
+                    <div class="neon-slider-wrapper"><input type="range" id="xh-y-slider" class="neon-slider slide-sound" min="-200" max="200" step="1" value="0" oninput="updateXh()"></div>
+                </div>
+            </section>
+
+            <section id="tab-setup" class="dashboard-section tab-content">
+                <h3 class="section-title">ADMIN ACCOUNT</h3>
+                <div class="glass-card dashboard-preview mb-25">
+                    <div class="user-profile"><div class="avatar-ring"><img src="img/cc.jpg" alt="Anh Hoang" class="avatar-img" onerror="this.src='https://i.ibb.co/LtbY9J4/default.png'"></div><div class="user-info"><h3>Anh Hoang</h3><p class="text-primary mono-text">SYSTEM ADMIN</p></div></div>
+                    <div class="key-status-box mb-15">
+                        <div class="k-row"><span class="k-label">Status</span> <span class="k-val text-primary"><i class="fas fa-check-circle"></i> Connected</span></div>
+                        <div class="k-row"><span class="k-label">Key ID</span> <span class="k-val text-white current-key-display mono-text">Đang tải...</span></div>
+                        <div class="k-row"><span class="k-label">Expire</span> <span class="k-val text-primary info-key-exp mono-text">Đang tải...</span></div>
+                    </div>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button class="btn-boost click-sound" onclick="window.open('https://zalo.me/0787056720', '_blank')" style="flex: 1; background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary); color: var(--primary); margin:0;"><i class="fas fa-comment-dots"></i> ZALO</button>
+                        <button class="btn-boost click-sound" onclick="window.open('https://www.facebook.com/share/18i5PMa93A/?mibextid=wwXIfr', '_blank')" style="flex: 1; background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary); color: var(--primary); margin:0;"><i class="fab fa-facebook-f"></i> FACEBOOK</button>
+                    </div>
+                </div>
+
+                <h3 class="section-title">SYSTEM OPTIMIZE</h3>
+                <div class="os-selector-group mb-25">
+                    <button class="os-btn click-sound" onclick="showToast('Đã dọn dẹp tập tin rác hệ thống!');" style="color:var(--primary)!important; border-color:var(--primary)!important;"><span class="content"><i class="fas fa-broom"></i> CLEAR JUNK FILES</span></button>
+                </div>
+
+                <h3 class="section-title">DOWNLOAD</h3>
+                <div class="os-selector-group mb-25">
+                    <button class="os-btn click-sound" onclick="window.open('https://www.mediafire.com/file/v771dxht1mfmru5/AimLock_IOS.zip/file', '_blank')"><span class="content"><i class="fab fa-apple"></i> INSTALL IOS</span></button>
+                    <button class="os-btn click-sound" onclick="window.open('https://www.mediafire.com/file/8v7o2w95898mt0p/AimLock_Android.zip/file', '_blank')"><span class="content"><i class="fab fa-android"></i> INSTALL ANDROID</span></button>
+                </div>
+
+                <h3 class="section-title">MUSIC & COLOR</h3>
+                <div class="glass-card media-card mb-100">
+                    <div class="color-control"><p>ĐỔI MÀU CHỦ ĐẠO</p><div class="color-ring"><input type="color" id="theme-color-picker" value="#00e5ff"></div></div>
+                    <h3 class="section-title mt-15" style="margin-bottom: 0;">MUSIC PLAYER</h3>
+                    <div class="music-player-modern">
+                        <audio id="bg-music"><source id="music-source" src="https://files.catbox.moe/g7t1i5.mp3" type="audio/mpeg"></audio>
+                        <select id="music-select" class="modern-select">
+                            <option value="https://www.image2url.com/r2/default/audio/1776071678492-76ea7c92-e627-418d-b158-89defb64282b.mp3">1. Highlight Free Fire</option>
+                            <option value="https://www.image2url.com/r2/default/audio/1776071901942-db38decd-8cd0-4cbf-9851-e6cb241c425a.mp3">2. Six usa v3</option>
+                            <option value="https://www.image2url.com/r2/default/audio/1776072009963-4d09c7a5-8756-4b8e-9829-bcd179b087b4.mp3">3. Tiktok Trends</option>
+                        </select>
+                        <div class="mp-controls">
+                            <button id="music-play-btn" class="mp-btn click-sound"><i class="fas fa-play"></i></button>
+                            <div class="mp-info"><p id="music-name-display" class="marquee" style="color:var(--primary);">Đang phát: Highlight Free Fire</p><div class="mp-progress"><div class="mp-bar" id="music-bar"></div></div></div>
+                        </div>
+                        <div class="mp-volume"><i class="fas fa-volume-up"></i><input type="range" id="music-volume-slider" class="vol-slider slide-sound" min="0" max="100" value="50"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<div id="cyber-booster-modal" class="hidden fullscreen-modal">
+    <div class="glass-panel adapt-box booster-box">
+        <div class="fingerprint-wrapper"><i class="fas fa-fingerprint fp-icon" id="fp-scan-icon"></i><div class="fp-scanline"></div></div>
+        <h3 class="gradient-text mt-25">INJECTING ENGINE</h3>
+        <div id="booster-percent" class="booster-pct-text">0%</div>
+        <div class="progress-track mt-15"><div id="booster-bar-fill" class="progress-fill"></div></div>
+    </div>
+</div>
+
+<div id="aimlock-modal" class="hidden fullscreen-modal">
+    <div class="glass-panel adapt-box">
+        <i class="fas fa-crosshairs crosshair-spinner"></i>
+        <h3 class="gradient-text" id="dynamic-modal-title">ĐANG KÍCH HOẠT AIMLOCK</h3>
+        <div id="aim-percent" class="mono-text font-bold text-primary mt-15" style="font-size: 32px; text-shadow: 0 0 20px var(--primary-glow);">0%</div>
+    </div>
+</div>
+
+<script src="panel-actions.js"></script>
+<script src="codecs.js"></script>
+<script src="codecss.js"></script>
+<script src="codecn.js"></script>
+<script src="app.js"></script>
+<script src="feature-hooks.js"></script>
+<script src="features.js"></script>
+<script src="key.js"></script>
+
+<script>
+    window.themeColor = '#00e5ff';
+    window.themeRGB = '0, 229, 255';
+    window.currentSelectedOS = null;
+
+    const SENS_RANGES = [
+      { min: 165, max: 200 }, { min: 170, max: 200 }, { min: 50,  max: 162 },
+      { min: 0,   max: 90 }, { min: 0,   max: 86 }, { min: 123, max: 185 }, { min: 23,  max: 44 }
+    ];
+
+    window.generateSensData = () => SENS_RANGES.map(range => Math.floor(Math.random() * (range.max - range.min + 1)) + range.min);
+    window.getSavedSens = (os) => { const data = localStorage.getItem(`elite_turbo_sens_${os}`); return data ? JSON.parse(data) : null; };
+    window.saveSens = (os, data) => { localStorage.setItem(`elite_turbo_sens_${os}`, JSON.stringify(data)); };
+    window.animateNumber = function(element, start, end, duration) {
+      let startTime = null;
+      const step = (currentTime) => {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        element.innerText = Math.floor(easeOut * (end - start) + start);
+        if (progress < 1) window.requestAnimationFrame(step); else element.innerText = end;
+      }; window.requestAnimationFrame(step);
+    };
+    window.renderSensitivityPanel = function(data, animate = true) {
+      data.forEach((val, index) => { const el = document.getElementById(`sens-val-${index + 1}`); if (!el) return; if (animate) window.animateNumber(el, parseInt(el.innerText) || 0, val, 1200); else el.innerText = val; });
+    };
+
+
+    function getDeviceName() {
+        const ua = navigator.userAgent;
+        if (/iPhone/.test(ua)) return "Apple iPhone";
+        if (/iPad/.test(ua)) return "Apple iPad";
+        if (/Android/.test(ua)) {
+            const match = ua.match(/Android.*?; (.*?) Build/);
+            return match ? match[1] : "Android Device";
+        }
+        if (/Windows NT/.test(ua)) return "Windows PC";
+        if (/Mac OS/.test(ua)) return "Mac OS";
+        return "Unknown Device";
+    }
+
+
+    window.selectDevice = function(os, isAuto = false) {
+      window.currentSelectedOS = os;
+      document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active'));
+      const targetBtn = document.getElementById('btn-' + os);
+      if(targetBtn) targetBtn.classList.add('active');
+
+      const xhairTab = document.getElementById('tab-crosshair');
+      const xhairNav = document.getElementById('nav-xhair');
+
+      if (os === 'ios') {
+          if (xhairNav) xhairNav.style.display = 'none';
+          document.getElementById('virtual-crosshair').style.display = 'none';
+          const chToggle = document.getElementById('crosshair-toggle');
+          if (chToggle) chToggle.checked = false;
+          if (xhairTab && xhairTab.classList.contains('active-tab')) {
+              document.querySelector('[data-target="tab-home"]').click();
+          }
+      } else {
+          if (xhairNav) xhairNav.style.display = 'flex';
+      }
+
+      const applySens = () => {
+          const panel = document.getElementById('sensitivity-panel');
+          if (panel) { panel.classList.remove('hidden-panel'); panel.classList.add('show-panel'); }
+          let currentData = window.getSavedSens(os);
+          if (!currentData || currentData.length < SENS_RANGES.length) {
+              currentData = window.generateSensData();
+              window.saveSens(os, currentData);
+          }
+          window.renderSensitivityPanel(currentData, !isAuto);
+      };
+
+      if (isAuto) {
+          applySens();
+          document.getElementById("detected-device-name").innerText = getDeviceName();
+          return;
+      }
+
+      const modal = document.getElementById('feature-progress-modal');
+      const bar = document.getElementById('fp-bar'); const pct = document.getElementById('fp-percent');
+      const title = modal.querySelector('h3'); const name = document.getElementById('fp-name'); const icon = modal.querySelector('.icon-core');
+
+      title.innerText = "OPTIMIZING ENGINE"; name.innerText = os === 'ios' ? "iOS ARCHITECTURE" : "ANDROID ARCHITECTURE";
+      icon.className = os === 'ios' ? "fab fa-apple icon-core" : "fab fa-android icon-core";
+
+      modal.classList.remove('hidden'); bar.style.width = '0%'; pct.innerText = '0%';
+
+      let progress = 0;
+      const interval = setInterval(() => {
+          progress += Math.floor(Math.random() * 12) + 6;
+          if(progress >= 100) {
+              progress = 100; clearInterval(interval); bar.style.width = '100%'; pct.innerText = '100%';
+              setTimeout(() => {
+                  modal.classList.add('hidden'); showToast("Tối ưu thuật toán: " + os.toUpperCase());
+                  applySens();
+              }, 400);
+          } else { bar.style.width = progress + '%'; pct.innerText = progress + '%'; }
+      }, 50);
+    }
+
+
+    let currentXhType = 1;
+    const xhTemplates = [
+        `<svg viewBox="0 0 100 100" class="xh-svg"><circle cx="50" cy="50" r="5" fill="var(--xh-color)"/><line x1="25" y1="25" x2="36" y2="36" stroke="#b0b5ba" stroke-width="5.5" stroke-linecap="round"/><line x1="75" y1="25" x2="64" y2="36" stroke="#b0b5ba" stroke-width="5.5" stroke-linecap="round"/><line x1="25" y1="75" x2="36" y2="64" stroke="#b0b5ba" stroke-width="5.5" stroke-linecap="round"/><line x1="75" y1="75" x2="64" y2="64" stroke="#b0b5ba" stroke-width="5.5" stroke-linecap="round"/></svg>`,
+        `<svg viewBox="0 0 100 100" class="xh-svg"><path d="M 36 24 L 28 16 L 16 28 L 24 36" fill="none" stroke="var(--xh-color)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M 64 24 L 72 16 L 84 28 L 76 36" fill="none" stroke="var(--xh-color)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M 24 64 L 16 72 L 28 84 L 36 76" fill="none" stroke="var(--xh-color)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M 76 64 L 84 72 L 72 84 L 64 76" fill="none" stroke="var(--xh-color)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="30" r="3.5" fill="#b91c1c"/><circle cx="50" cy="70" r="3.5" fill="#b91c1c"/><circle cx="30" cy="50" r="3.5" fill="#b91c1c"/><circle cx="70" cy="50" r="3.5" fill="#b91c1c"/><circle cx="50" cy="50" r="3.5" fill="#ffffff"/></svg>`,
+        `<svg viewBox="0 0 100 100" class="xh-svg"><circle cx="50" cy="50" r="40" fill="none" stroke="var(--xh-color)" stroke-width="3"/><polygon points="16,16 31,24 24,31" fill="var(--xh-color)"/><polygon points="84,16 69,24 76,31" fill="var(--xh-color)"/><polygon points="16,84 24,69 31,76" fill="var(--xh-color)"/><polygon points="84,84 76,69 69,76" fill="var(--xh-color)"/><line x1="5" y1="50" x2="35" y2="50" stroke="var(--xh-color)" stroke-width="3"/><line x1="65" y1="50" x2="95" y2="50" stroke="var(--xh-color)" stroke-width="3"/><line x1="50" y1="5" x2="50" y2="35" stroke="var(--xh-color)" stroke-width="3"/><line x1="50" y1="65" x2="50" y2="95" stroke="var(--xh-color)" stroke-width="3"/><line x1="20" y1="45" x2="20" y2="55" stroke="var(--xh-color)" stroke-width="2"/><line x1="30" y1="45" x2="30" y2="55" stroke="var(--xh-color)" stroke-width="2"/><line x1="70" y1="45" x2="70" y2="55" stroke="var(--xh-color)" stroke-width="2"/><line x1="80" y1="45" x2="80" y2="55" stroke="var(--xh-color)" stroke-width="2"/><line x1="45" y1="20" x2="55" y2="20" stroke="var(--xh-color)" stroke-width="2"/><line x1="45" y1="30" x2="55" y2="30" stroke="var(--xh-color)" stroke-width="2"/><line x1="45" y1="70" x2="55" y2="70" stroke="var(--xh-color)" stroke-width="2"/><line x1="45" y1="80" x2="55" y2="80" stroke="var(--xh-color)" stroke-width="2"/><circle cx="50" cy="50" r="15" fill="none" stroke="#ffffff" stroke-width="3"/><circle cx="50" cy="50" r="7" fill="#ff0000"/></svg>`,
+        `<svg viewBox="0 0 100 100" class="xh-svg"><circle cx="50" cy="50" r="24" fill="none" stroke="#d32f2f" stroke-width="3.5"/><polygon points="46,24 54,24 50,12" fill="#d32f2f"/><polygon points="46,76 54,76 50,88" fill="#d32f2f"/><polygon points="24,46 24,54 12,50" fill="#d32f2f"/><polygon points="76,46 76,54 88,50" fill="#d32f2f"/><line x1="24" y1="50" x2="76" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><line x1="50" y1="24" x2="50" y2="76" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><circle cx="50" cy="50" r="3.5" fill="var(--xh-color)"/></svg>`
+    ];
+
+    window.setXhType = function(type) {
+        currentXhType = type;
+        document.querySelectorAll('.xh-option').forEach(el => el.classList.remove('active'));
+        document.getElementById('xh-opt-' + type).classList.add('active');
+        updateXh();
+    }
+
+    window.updateXh = function() {
+        const color = document.getElementById('xh-color-picker').value;
+        const size = document.getElementById('xh-size-slider').value;
+        const x = document.getElementById('xh-x-slider').value;
+        const y = document.getElementById('xh-y-slider').value;
+
+        document.getElementById('xh-size-lbl').innerText = size + 'x';
+        document.getElementById('xh-x-lbl').innerText = x + 'px';
+        document.getElementById('xh-y-lbl').innerText = y + 'px';
+
+        const vh = document.getElementById('virtual-crosshair');
+        vh.style.setProperty('--xh-color', color);
+        vh.style.setProperty('--xh-size', size);
+        vh.style.setProperty('--xh-x', x + 'px');
+        vh.style.setProperty('--xh-y', y + 'px');
+
+        vh.innerHTML = xhTemplates[currentXhType - 1];
+        for(let i=1; i<=4; i++) {
+            const preview = document.getElementById('preview-' + i);
+            if (preview) { preview.style.setProperty('--xh-color', color); preview.innerHTML = xhTemplates[i - 1]; }
+        }
+
+
+        if (window.AndroidBridge && window.AndroidBridge.updateCrosshairSettings) {
+            window.AndroidBridge.updateCrosshairSettings(currentXhType, color, size, x, y);
+        }
+    }
+
+    setTimeout(() => { updateXh(); }, 500);
+
+
+    document.getElementById('crosshair-toggle').addEventListener('change', function(e) {
+        const isChecked = this.checked;
+
+        if (window.AndroidBridge && window.AndroidBridge.toggleVirtualCrosshair) {
+
+            document.getElementById('virtual-crosshair').style.display = 'none';
+            window.AndroidBridge.toggleVirtualCrosshair(isChecked);
+            if (isChecked) setTimeout(() => { updateXh(); }, 300);
+        } else {
+
+            if (document.body.classList.contains("panel-active")) {
+                document.getElementById('virtual-crosshair').style.display = isChecked ? 'block' : 'none';
+            }
+        }
+
+        if(isChecked) showToast("VIRTUAL CROSSHAIR: BẬT");
+        localStorage.setItem("crosshair-enabled", isChecked);
+    });
+
+    window.startInjection = function(url) {
+        if (window.startBoosterSequence) {
+            window.startBoosterSequence(() => { playClickSound(); setTimeout(()=>{window.location.href = url;},500); });
+        } else { playClickSound(); setTimeout(()=>{window.location.href = url;},500); }
+    }
+
+    window.startBoosterSequence = function(callback) {
+        const modal = document.getElementById('cyber-booster-modal'); const pct = document.getElementById('booster-percent'); const fill = document.getElementById('booster-bar-fill'); const title = modal.querySelector('h3'); const icon = document.getElementById('fp-scan-icon');
+        modal.classList.remove('hidden'); pct.innerText = '0%'; fill.style.width = '0%'; fill.style.backgroundColor = window.themeColor; pct.style.color = window.themeColor; icon.style.color = window.themeColor; icon.style.filter = `drop-shadow(0 0 20px ${window.themeColor})`; title.innerText = "INJECTING ENGINE";
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 8) + 3;
+            if(progress >= 100) {
+                progress = 100; clearInterval(interval); pct.innerText = '100%'; fill.style.width = '100%'; pct.style.color = window.themeColor; fill.style.backgroundColor = window.themeColor; icon.style.color = window.themeColor; icon.style.filter = `drop-shadow(0 0 20px ${window.themeColor})`; title.innerText = "INJECTION COMPLETE!";
+                setTimeout(() => { modal.classList.add('hidden'); if(typeof callback === 'function') callback(); else showToast("Khởi động Game thành công!"); }, 1200);
+            } else { pct.innerText = progress + '%'; fill.style.width = progress + '%'; }
+        }, 60);
+    }
+
+    window.addEventListener("vsh-license-change", (e) => {
+        if (e.detail.verified) {
+            if (e.detail.expiresAt) localStorage.setItem("vsh_license_exp", e.detail.expiresAt);
+            if (e.detail.state === "activate") {
+                const gate = document.getElementById('vgGate'); if(gate) gate.style.opacity = '0';
+                setTimeout(() => { if(gate) gate.style.display = 'none'; }, 3000);
+            }
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+
+      setTimeout(() => {
+          const ua = navigator.userAgent || navigator.vendor || window.opera;
+          if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) { selectDevice('ios', true); }
+          else if (/android/i.test(ua)) { selectDevice('android', true); }
+          else { selectDevice('android', true); }
+      }, 800);
+
+      document.querySelectorAll('.os-btn').forEach(btn => {
+          btn.addEventListener('mouseenter', () => btn.classList.add('active')); btn.addEventListener('mouseleave', () => btn.classList.remove('active')); btn.addEventListener('touchstart', () => btn.classList.add('active'), { passive: true }); btn.addEventListener('touchend', () => setTimeout(() => btn.classList.remove('active'), 300), { passive: true });
+      });
+
+      const navItems = document.querySelectorAll('.side-nav .nav-item'); const tabContents = document.querySelectorAll('.tab-content'); const titleDisplay = document.getElementById('current-tab-title');
+      const tabTitles = { 'tab-home': 'SYSTEM DASHBOARD', 'tab-sens': 'AI SENSITIVITY', 'tab-func': 'CORE MODULES', 'tab-boost': 'TELEMETRY ENGINE', 'tab-crosshair': 'VIRTUAL CROSSHAIR', 'tab-setup': 'PREFERENCE SETUP' };
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const targetId = item.getAttribute('data-target'); navItems.forEach(n => n.classList.remove('active-nav')); item.classList.add('active-nav');
+          tabContents.forEach(content => { content.style.display = 'none'; content.classList.remove('active-tab'); });
+          const targetTab = document.getElementById(targetId);
+          if (targetTab) { targetTab.style.display = 'block'; void targetTab.offsetWidth; targetTab.classList.add('active-tab'); targetTab.style.animation = "fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards"; }
+          if(titleDisplay && tabTitles[targetId]) titleDisplay.innerText = tabTitles[targetId];
+        });
+      });
+
+      document.querySelectorAll('.aimsync').forEach(input => {
+        input.addEventListener('click', function(e) {
+          if (this.id === 'crosshair-toggle') { return; }
+
+          const self = this; const card = this.closest('.func-card'); const featureName = card.querySelector('h4').innerText.trim();
+
+          if (this.checked) {
+              e.preventDefault(); this.checked = false;
+              const modal = document.getElementById('aimlock-modal'); const pct = document.getElementById('aim-percent'); const titleEl = document.getElementById('dynamic-modal-title');
+              if(titleEl) titleEl.innerText = "INJECTING " + featureName;
+              modal.classList.remove('hidden'); pct.innerText = '0%'; let progress = 0;
+              const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if(progress >= 100) {
+                  progress = 100; clearInterval(interval); pct.innerText = '100%';
+                  setTimeout(() => { modal.classList.add('hidden'); self.checked = true; card.classList.add('active-card'); showToast("ENABLED: " + featureName); self.dispatchEvent(new Event('change')); }, 600);
+                } else { pct.innerText = progress + '%'; }
+              }, 40);
+          } else { card.classList.remove('active-card'); showToast("DISABLED: " + featureName, true); self.dispatchEvent(new Event('change')); }
+        });
+      });
+
+      setInterval(() => {
+          const kDisplays = document.querySelectorAll('.current-key-display'); const expDisplays = document.querySelectorAll('.info-key-exp');
+          let k = localStorage.getItem("vsh_license_key"); let kText = k ? k : "Chưa kích hoạt"; kDisplays.forEach(el => el.innerText = kText);
+          let exp = localStorage.getItem("vsh_license_exp"); let expText = "VĨNH VIỄN";
+          if (exp && exp !== "VĨNH VIỄN" && !isNaN(exp)) {
+              let d = new Date(parseInt(exp)); expText = new Intl.DateTimeFormat("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(d).replace(',', ' //');
+          } expDisplays.forEach(el => el.innerText = expText);
+      }, 1000);
+
+      const colorPicker = document.getElementById('theme-color-picker');
+      if (colorPicker) {
+        colorPicker.addEventListener('input', (e) => {
+          const hex = e.target.value;
+          window.themeColor = hex;
+          const r = parseInt(hex.slice(1, 3), 16); const g = parseInt(hex.slice(3, 5), 16); const b = parseInt(hex.slice(5, 7), 16);
+          const rgb = `${r}, ${g}, ${b}`;
+          window.themeRGB = rgb;
+
+          document.documentElement.style.setProperty('--primary', hex);
+          document.documentElement.style.setProperty('--primary-rgb', rgb);
+          document.documentElement.style.setProperty('--primary-glow', `rgba(${rgb}, 0.6)`);
+          document.documentElement.style.setProperty('--primary-15', `rgba(${rgb}, 0.15)`);
+        });
+      }
+
+      const audio = document.getElementById('bg-music'); const playBtn = document.getElementById('music-play-btn'); const musicBar = document.getElementById('music-bar'); const musicSelect = document.getElementById('music-select'); const volumeSlider = document.getElementById('music-volume-slider');
+      if (audio && playBtn) {
+        if(volumeSlider) { audio.volume = volumeSlider.value / 100; volumeSlider.addEventListener('input', (e) => { audio.volume = e.target.value / 100; }); }
+        playBtn.addEventListener('click', () => { if (audio.paused) { audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>'; } else { audio.pause(); playBtn.innerHTML = '<i class="fas fa-play"></i>'; } });
+        audio.addEventListener('timeupdate', () => { if (audio.duration) { musicBar.style.width = ((audio.currentTime / audio.duration) * 100) + '%'; } });
+        audio.addEventListener('ended', () => { audio.currentTime = 0; audio.play(); });
+        if (musicSelect) { musicSelect.addEventListener('change', (e) => { audio.src = e.target.value; document.getElementById('music-name-display').innerText = "Đang phát: " + e.target.options[e.target.selectedIndex].text; audio.play(); playBtn.innerHTML = '<i class="fas fa-pause"></i>'; }); }
+      }
+    });
+
+    (function initSpace() {
+        const canvas = document.getElementById('space-canvas'); if(!canvas) return; const ctx = canvas.getContext('2d'); let width, height; let stars = [];
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initStars(); }
+        function initStars() { stars = []; for(let i=0; i<150; i++) { stars.push({ x: Math.random() * width, y: Math.random() * height, r: Math.random() * 2 + 0.5, dy: -(Math.random() * 1 + 0.2), alpha: Math.random() * 0.8 + 0.2 }); } }
+        window.addEventListener('resize', resize); resize();
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(s => {
+                s.y += s.dy; if(s.y < 0) { s.y = height + 10; s.x = Math.random() * width; }
+                ctx.beginPath(); ctx.fillStyle = `rgba(${window.themeRGB || '0, 229, 255'}, ${s.alpha})`; ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
+            }); requestAnimationFrame(animate);
+        } animate();
+    })();
+
+
+    window.enterPanel = function() {
+      document.body.classList.add("panel-active");
+
+      document.getElementById('virtual-crosshair').style.display = 'none';
+      const xhToggle = document.getElementById('crosshair-toggle');
+      if (xhToggle) xhToggle.checked = false;
+
+      if (window.AndroidBridge && window.AndroidBridge.toggleVirtualCrosshair) {
+          window.AndroidBridge.toggleVirtualCrosshair(false);
+      }
+
+      const intro = document.getElementById("home-intro"); const panel = document.getElementById("main-panel");
+      intro.style.transform = "scale(1.1)"; intro.style.opacity = "0";
+      setTimeout(() => { intro.style.display = "none"; panel.style.display = "flex"; panel.style.animation = "fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards"; }, 400);
+    }
+
+    window.logoutKey = function() {
+      if(confirm("Xác nhận đăng xuất khỏi thiết bị này?")) {
+        localStorage.removeItem("vsh_license_key"); localStorage.removeItem("vsh_license_exp");
+        if(window.VSHKeyGate && typeof window.VSHKeyGate.reset === "function") { window.VSHKeyGate.reset(); } else { location.reload(); }
+      }
+    }
+
+    window.showToast = function(text, isError = false) {
+      const toast = document.getElementById('action-toast'); document.getElementById('toast-text').innerText = text; document.getElementById('toast-icon').className = isError ? "fas fa-exclamation-triangle" : "fas fa-check-circle";
+      toast.className = 'action-toast show ' + (isError ? 'error' : 'success'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+    }
+
+    let audioCtx;
+    const initAudio = () => { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); };
+    document.addEventListener('pointerdown', initAudio, { once: true });
+
+    function playClickSound() {
+      if (!audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.type = 'square'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
+
+    let lastSlideTime = 0;
+    function playSlideSound() {
+      if (!audioCtx) return; const now = audioCtx.currentTime;
+      if (now - lastSlideTime < 0.04) return; lastSlideTime = now;
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+      osc.type = 'triangle'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(400, now + 0.02);
+      gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.02);
+    }
+
+    document.querySelectorAll('.slide-sound').forEach(slider => { slider.addEventListener('input', playSlideSound); });
+
+    document.addEventListener('click', (e) => {
+      if(e.target.closest('.click-sound')) playClickSound();
+      const ripple = document.createElement('div'); ripple.className = 'glass-ripple'; ripple.style.left = e.clientX + 'px'; ripple.style.top = e.clientY + 'px';
+      document.body.appendChild(ripple); setTimeout(() => ripple.remove(), 600);
+    });
+</script>
+</body>
+</html>
